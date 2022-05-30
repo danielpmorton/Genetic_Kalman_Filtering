@@ -8,11 +8,10 @@ from helpers import seedRNG
 '''
 Spring Mass Damper Simple Example
 
-Another simple linear system
+Another simple linear system, we assume that the position is observable with noisy measurement.
 
-We assume that the position is observable
-
-TODO Finish description
+The dynamics equations are the discretized form of the standard second-order differential equations
+for a spring-mass-damper, mx" + cx' +kx = f(t)
 
 '''
 # System Parameters ##########################################################

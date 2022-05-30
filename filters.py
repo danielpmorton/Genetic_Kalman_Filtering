@@ -106,39 +106,3 @@ def PF(X, u, y, Q, R, f_PF, g_PF, numParticles, resample=True):
     mu = np.average(X.particles, weights=X.weights, axis=1) 
     sigma = np.cov(X.particles)
     return mu, sigma 
-
-
-
-# THIS DOESN'T MAKE SENSE !!!!
-# Can't apply the AA222 algorithm here???
-def BLS_iEKF(mu, sigma, u, y, Q, R, f, g, get_A, get_C, maxIterations, d, alpha, beta=1e-4, p=0.5):
-    # Predict
-    A = get_A(mu, u)
-    mubar = f(mu, u)
-    sigmabar = A @ sigma @ A.T + Q
-    # Iterative update step
-    converged = False
-    mu_i = mubar
-    mu_i_prev = mubar * 1e5 # Random large value
-    iter = 0
-
-    # Get an initial gradient
-    C_i = get_C(mu_i)
-    K_i = sigmabar @ C_i.T @ np.linalg.inv(C_i @ sigmabar @ C_i.T + R)
-    orig_gx = K_i @ (y - g(mu_i)) + K_i @ C_i @ (mu_i - mubar)
-    
-    orig_fx = objective_fxn(mubar) # This is equivalent to "y" in the AA222 notes
-
-    while not converged and iter < maxIterations:
-        if objective_fxn(mubar + alpha*d) < orig_fx + beta * alpha * np.dot(orig_gx,d):
-            converged = True
-        else:
-            alpha *= p
-            iter += 1
-
-
-    # Apply the converged step length to mu
-    mu = mubar + alpha * d
-    sigma = sigmabar - K_i @ C_i @ sigmabar
-    return mu, sigma
-
